@@ -8,16 +8,16 @@ export const GraphProvider = ({ children }) => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [connecting, setConnecting] = useState(false);
-  const [temporaryEdge, setTemporaryEdge] = useState(null); // To hold the line between selected nodes
+  const [temporaryEdge, setTemporaryEdge] = useState(null);
 
   const addNode = (type) => {
-    const canvasWidth = 800;
-    const canvasHeight = 500;
-    const padding = 50;
-  
+    const canvasWidth = 800; // Define your canvas width
+    const canvasHeight = 500; // Define your canvas height
+    const padding = 50; // To ensure nodes aren't too close to the edges
+    
     const randomX = Math.floor(Math.random() * (canvasWidth - padding * 2)) + padding;
     const randomY = Math.floor(Math.random() * (canvasHeight - padding * 2)) + padding;
-  
+    
     const newNode = { id: `node-${nodes.length + 1}`, type, x: randomX, y: randomY };
     setNodes([...nodes, newNode]);
   };
@@ -43,6 +43,8 @@ export const GraphProvider = ({ children }) => {
         edges,
         selectedNode,
         setSelectedNode,
+        setNodes,
+        setEdges,        // Make sure to provide setEdges here
         addNode,
         addEdge,
         removeNode,
@@ -50,7 +52,7 @@ export const GraphProvider = ({ children }) => {
         connecting,
         setConnecting,
         temporaryEdge,
-        setTemporaryEdge,  // Expose temporary edge to update it
+        setTemporaryEdge,
       }}
     >
       {children}
