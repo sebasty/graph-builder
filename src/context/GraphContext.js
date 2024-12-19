@@ -7,15 +7,17 @@ export const GraphProvider = ({ children }) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [connecting, setConnecting] = useState(false);
+  const [temporaryEdge, setTemporaryEdge] = useState(null); // To hold the line between selected nodes
 
   const addNode = (type) => {
     const canvasWidth = 800;
     const canvasHeight = 500;
     const padding = 50;
-
+  
     const randomX = Math.floor(Math.random() * (canvasWidth - padding * 2)) + padding;
     const randomY = Math.floor(Math.random() * (canvasHeight - padding * 2)) + padding;
-
+  
     const newNode = { id: `node-${nodes.length + 1}`, type, x: randomX, y: randomY };
     setNodes([...nodes, newNode]);
   };
@@ -34,10 +36,6 @@ export const GraphProvider = ({ children }) => {
     setEdges(edges.filter((edge) => edge.id !== edgeId));
   };
 
-  const resetSelectedNode = () => {
-    setSelectedNode(null);
-  };
-
   return (
     <GraphContext.Provider
       value={{
@@ -49,7 +47,10 @@ export const GraphProvider = ({ children }) => {
         addEdge,
         removeNode,
         removeEdge,
-        resetSelectedNode,
+        connecting,
+        setConnecting,
+        temporaryEdge,
+        setTemporaryEdge,  // Expose temporary edge to update it
       }}
     >
       {children}

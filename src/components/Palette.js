@@ -4,26 +4,26 @@ import { GraphContext } from '../context/GraphContext';
 import { Button, Stack } from '@mui/material';
 
 const Palette = () => {
-  const { addNode, removeNode, selectedNode, setSelectedNode } = useContext(GraphContext);
+  const { addNode, removeNode, selectedNode, setSelectedNode, setConnecting, connecting } = useContext(GraphContext);
 
   // Handle the remove button
   const handleRemoveSelectedNode = () => {
     if (selectedNode) {
-      removeNode(selectedNode.id); // Remove the node
-      setSelectedNode(null); // Deselect the node after removal
+      removeNode(selectedNode.id);
+      setSelectedNode(null);
     } else {
-      alert('No node selected'); // Show an alert if no node is selected
+      alert('No node selected');
     }
   };
 
   // Handle adding a node
   const handleAddNode = (type) => {
-    addNode(type); // Add a new node to the graph
+    addNode(type);
   };
 
-  // Handle clicking a node to select it
-  const handleNodeClick = (node) => {
-    setSelectedNode(node); // Set the selected node
+  // Toggle the connection mode
+  const toggleConnectionMode = () => {
+    setConnecting((prev) => !prev); // Toggle connection mode on/off
   };
 
   return (
@@ -38,9 +38,16 @@ const Palette = () => {
         variant="contained" 
         color="error" 
         onClick={handleRemoveSelectedNode}
-        disabled={!selectedNode}  // Disable if no node is selected
+        disabled={!selectedNode}
       >
         Remove Selected Node
+      </Button>
+      <Button 
+        variant="contained" 
+        onClick={toggleConnectionMode}
+        color={connecting ? "success" : "primary"}
+      >
+        {`Connect Nodes: ${connecting ? 'On' : 'Off'}`}
       </Button>
     </Stack>
   );
