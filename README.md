@@ -1,70 +1,73 @@
-# Getting Started with Create React App
+### Prerequisites
+Node.js version: v22.12.0 
+npm: v10.9.2 
+React: ^19.0.0
+Install booth.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### React development environment set up.
+Clone the Repository
+git clone git@github.com:sebasty/graph-builder.git
+cd graph-builder
 
-## Available Scripts
+### Install Dependencies
+npm install
 
-In the project directory, you can run:
+### Start the Development Server
+npm start
 
-### `npm start`
+### View in Browser
+Open your browser and navigate to: http://localhost:3000
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Node Graph Application Documentation
+## Overview
+This application allows users to create, move, and connect nodes (circles and squares) dynamically on a canvas. The nodes can be connected via lines, and the connections are maintained as nodes are moved. Additionally, users can delete nodes and their associated connections. The application is responsive and adjusts to various screen sizes.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Features
 
-### `npm test`
+## 1. Create Nodes
+Add circle or square nodes via buttons from the palette.
+Nodes are placed randomly within the canvas.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 2. Delete Nodes
+Option 1: Right-click on a node to delete it.
+Option 2: Use the "Remove Node" button to delete the currently selected node.
 
-### `npm run build`
+## 3. Connect Nodes
+To connect 2 nodes:
+1. Click on one node.
+2. Click "CONNECT NODES" button. 
+3. Button will turn "green" and will show ON instead of OFF.
+4. Click on the second node you want to connect whit.
+Node are connected via a line.
+Connections are maintained even when nodes are moved.
+All Nodes can be connected between them using same strategy.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 4. Move Nodes
+Drag and drop nodes to move them within the canvas.
+Lines connecting nodes update dynamically during movement.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 5. Responsive Design
+Canvas and UI adjust dynamically to various screen sizes.
+Buttons stack vertically on smaller screens for better accessibility.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Docker Deployment
 
-### `npm run eject`
+## Install Docker on your machine.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Build the image:
+run this command -> docker build -t node-graph-app .
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Run the Docker Container
+run this command -> docker run -d -p 8080:8080 --name node-graph-container node-graph-app
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Verify it’s running:
+run this command -> docker ps
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+You should see an entry for node-graph-container with the following details:
+Image: node-graph-app
+Port Bindings: 0.0.0.0:8080->8080/tcp
 
-## Learn More
+## Run the Docker Container
+Start the container and map port 8080:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+#### Project should be available at http://localhost:8080/ as requested
