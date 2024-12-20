@@ -1,5 +1,4 @@
-// src/context/GraphContext.js
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 export const GraphContext = createContext();
 
@@ -10,14 +9,34 @@ export const GraphProvider = ({ children }) => {
   const [connecting, setConnecting] = useState(false);
   const [temporaryEdge, setTemporaryEdge] = useState(null);
 
+  // State for canvas dimensions
+  const [canvasSize, setCanvasSize] = useState({
+    width: window.innerWidth * 0.8,  // Canvas width 80% of the viewport width
+    height: 500, // Fixed height or dynamic if you need to change it
+  });
+
+  // Resize handler to update canvas size when the window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      setCanvasSize({
+        width: window.innerWidth * 0.8,  // Adjust width dynamically
+        height: 500,  // Optionally, you can change this too
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const addNode = (type) => {
-    const canvasWidth = 800; // Define your canvas width
-    const canvasHeight = 500; // Define your canvas height
-    const padding = 50; // To ensure nodes aren't too close to the edges
-    
-    const randomX = Math.floor(Math.random() * (canvasWidth - padding * 2)) + padding;
-    const randomY = Math.floor(Math.random() * (canvasHeight - padding * 2)) + padding;
-    
+    const { width, height } = canvasSize;
+    const padding = 50;  // Padding for node placement
+
+    const randomX = Math.floor(Math.random() * (width - padding * 2)) + padding;
+    const randomY = Math.floor(Math.random() * (height - padding * 2)) + padding;
+
     const newNode = { id: `node-${nodes.length + 1}`, type, x: randomX, y: randomY };
     setNodes([...nodes, newNode]);
   };
@@ -44,7 +63,7 @@ export const GraphProvider = ({ children }) => {
         selectedNode,
         setSelectedNode,
         setNodes,
-        setEdges,        // Make sure to provide setEdges here
+        setEdges,
         addNode,
         addEdge,
         removeNode,
@@ -53,6 +72,7 @@ export const GraphProvider = ({ children }) => {
         setConnecting,
         temporaryEdge,
         setTemporaryEdge,
+        canvasSize,  // Provide canvasSize state
       }}
     >
       {children}

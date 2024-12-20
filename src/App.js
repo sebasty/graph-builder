@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { Container } from '@mui/material';
 import Palette from './components/Palette';

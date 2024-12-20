@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { GraphContext } from '../context/GraphContext';
 import { Box } from '@mui/material';
 
@@ -7,15 +7,28 @@ const Canvas = () => {
     nodes, edges, setNodes, setEdges, 
     setSelectedNode, removeNode, 
     connecting, setConnecting, 
-    selectedNode, addEdge, temporaryEdge, setTemporaryEdge 
+    selectedNode, addEdge, temporaryEdge, setTemporaryEdge,
+    canvasSize
   } = useContext(GraphContext);
 
+  const [nodeSize, setNodeSize] = useState(50);  // Default node size
+  const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false); 
   const [draggedNode, setDraggedNode] = useState(null); 
   const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // Track the offset between mouse click and node position
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const nodeSize = 50;
+  // Use effect to detect screen size and adjust node size for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      setNodeSize(isMobile ? 25 : 50); // Half the size on mobile
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initialize the size on mount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleNodeClick = (node) => {
     if (connecting) {
@@ -37,41 +50,30 @@ const Canvas = () => {
     removeNode(node.id);
   };
 
-  // Handle mouse down event for dragging
   const handleMouseDown = (event, node) => {
-    // Prevent text selection or other default behavior during drag
     event.preventDefault();
-
-    // Set dragging state and initialize offset
     setIsDragging(true);
     setDraggedNode(node);
     setDragStartPosition({ x: event.clientX, y: event.clientY });
-
-    // Set offset between mouse click and the top-left corner of the node
     setOffset({
       x: event.clientX - node.x,
       y: event.clientY - node.y,
     });
   };
 
-  // Handle mouse move for dragging logic
   const handleMouseMove = (event) => {
     if (isDragging && draggedNode) {
-      // Calculate the new position based on mouse movement and offset
       const dx = event.clientX - dragStartPosition.x;
       const dy = event.clientY - dragStartPosition.y;
 
-      // Update the node's position smoothly by adding the offset to current mouse position
       const updatedNode = { 
         ...draggedNode, 
         x: event.clientX - offset.x, 
         y: event.clientY - offset.y 
       };
 
-      // Update the nodes in the state
       setNodes(nodes.map((node) => (node.id === draggedNode.id ? updatedNode : node)));
 
-      // Update the edges that connect to this node
       setEdges(edges.map((edge) => {
         if (edge.startNode.id === draggedNode.id) {
           return { ...edge, startNode: updatedNode };
@@ -82,35 +84,27 @@ const Canvas = () => {
         return edge;
       }));
 
-      // Update the starting point for the next mouse move
       setDragStartPosition({ x: event.clientX, y: event.clientY });
     }
   };
 
-  // Handle mouse up to stop dragging
   const handleMouseUp = () => {
     setIsDragging(false);
     setDraggedNode(null);
   };
 
-  // Render edges between nodes
+  // Render edges
   const renderEdges = () => {
     return edges.map((edge) => {
       const startNode = edge.startNode;
       const endNode = edge.endNode;
-
-      const x1 = startNode.x;
-      const y1 = startNode.y;
-      const x2 = endNode.x;
-      const y2 = endNode.y;
-
       return (
         <line
           key={edge.id}
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
+          x1={startNode.x}
+          y1={startNode.y}
+          x2={endNode.x}
+          y2={endNode.y}
           stroke="black"
           strokeWidth="2"
         />
@@ -120,18 +114,13 @@ const Canvas = () => {
 
   const renderTemporaryEdge = () => {
     if (temporaryEdge) {
-      const x1 = temporaryEdge.startNode.x;
-      const y1 = temporaryEdge.startNode.y;
-      const x2 = temporaryEdge.endNode.x;
-      const y2 = temporaryEdge.endNode.y;
-
       return (
         <line
           key="temporary-edge"
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
+          x1={temporaryEdge.startNode.x}
+          y1={temporaryEdge.startNode.y}
+          x2={temporaryEdge.endNode.x}
+          y2={temporaryEdge.endNode.y}
           stroke="gray"
           strokeWidth="2"
           strokeDasharray="4"
@@ -141,24 +130,37 @@ const Canvas = () => {
     return null;
   };
 
+  // Use canvasSize from context for adding nodes
+  const handleAddNode = (type) => {
+    const { width, height } = canvasSize;
+    const padding = 50;  // Padding for node placement
+
+    const randomX = Math.floor(Math.random() * (width - padding * 2)) + padding;
+    const randomY = Math.floor(Math.random() * (height - padding * 2)) + padding;
+
+    const newNode = { id: `node-${nodes.length + 1}`, type, x: randomX, y: randomY };
+    setNodes([...nodes, newNode]);
+  };
+
   return (
     <Box
+      ref={canvasRef}
       sx={{
-        width: '800px',
+        width: '100%',
         height: '500px',
         border: '1px solid black',
         position: 'relative',
         overflow: 'hidden',
       }}
-      onClick={() => setConnecting(false)}  // Stop connection mode on canvas click
-      onMouseMove={handleMouseMove} // Track mouse movement for drag
-      onMouseUp={handleMouseUp} // End dragging when mouse is released
+      onClick={() => setConnecting(false)} 
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
         {renderEdges()}
         {renderTemporaryEdge()}
       </svg>
-      
+
       {nodes.map((node) => (
         <div
           key={node.id}
@@ -174,7 +176,7 @@ const Canvas = () => {
           }}
           onClick={() => handleNodeClick(node)}
           onContextMenu={(e) => handleNodeRightClick(e, node)}
-          onMouseDown={(e) => handleMouseDown(e, node)} // Allow dragging when mouse is pressed down
+          onMouseDown={(e) => handleMouseDown(e, node)}
         />
       ))}
     </Box>

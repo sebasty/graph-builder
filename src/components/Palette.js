@@ -1,4 +1,3 @@
-// src/components/Palette.js
 import React, { useContext } from 'react';
 import { GraphContext } from '../context/GraphContext';
 import { Button, Stack } from '@mui/material';
@@ -27,7 +26,11 @@ const Palette = () => {
   };
 
   return (
-    <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+    <Stack 
+      direction={{ xs: 'column', sm: 'row' }}  // Stack vertically on small screens, horizontally on larger screens
+      spacing={2} 
+      sx={{ mb: 2 }}
+    >
       <Button variant="contained" onClick={() => handleAddNode('circle')}>
         Add Circle
       </Button>
